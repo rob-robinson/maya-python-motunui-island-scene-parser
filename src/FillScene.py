@@ -4,11 +4,38 @@ import json
 import string
 from sys import platform
 
-
 class FillScene:
+    config = {
+        "base_platform": {
+            "darwin": "/Users/robrobinson/Documents/maya/projects/default/assets/island",
+            "win32": "C:/Users/robro/Documents/maya/projects/MoanaScene/assets/island-basepackage-v1.1/island",
+            "linux": ""
+        },
+        "elements" : [
+            'isBayCedarA1',
+            'isBeach',
+            'isCoastline',
+            'isCoral',
+            'isDunesA',
+            'isDunesB',
+            'isGardeniaA',
+            'isHibiscus',
+            'isHibiscusYoung',
+            'isIronwoodA1',
+            'isIronwoodB',
+            'isKava',
+            'isLavaRocks',
+            'isMountainA',
+            'isMountainB',
+            'isNaupakaA',
+            'isPalmDead',
+            'isPalmRig',
+            'isPandanusA',
+            'osOcean'
+        ]
+    }
 
     baseDir = ""
-    elements = []
     current_element = ""
 
     def __init__(self):
@@ -16,49 +43,30 @@ class FillScene:
         # get set up for the proper workstation ...
         # TODO: extract this into a config that can be imported from file
 
-        if platform == "linux" or platform == "linux2":
-            pass
+        # if platform == "linux" or platform == "linux2":
+        #     pass
+        #
+        # elif platform == "darwin":
+        #     self.baseDir = config["base_platform"]["darwin"]
+        #
+        # elif platform == "win32":
+        #     self.baseDir = config["base_platform"]["win32"]
 
-        elif platform == "darwin":
-            self.baseDir = "/Users/robrobinson/Documents/maya/projects/default/assets/island"
-
-        elif platform == "win32":
-            self.baseDir = "C:/Users/robro/Documents/maya/projects/MoanaScene/assets/island-basepackage-v1.1/island"
-
-        self.elements = [   'isBayCedarA1',
-                            'isBeach',
-                            'isCoastline',
-                            'isCoral',
-                            'isDunesA',
-                            'isDunesB',
-                            'isGardeniaA',
-                            'isHibiscus',
-                            'isHibiscusYoung',
-                            'isIronwoodA1',
-                            'isIronwoodB',
-                            'isKava',
-                            'isLavaRocks',
-                            'isMountainA',
-                            'isMountainB',
-                            'isNaupakaA',
-                            'isPalmDead',
-                            'isPalmRig',
-                            'isPandanusA',
-                            'osOcean'
-                        ]
+        self.baseDir = self.config["base_platform"][platform]
 
         # only run a subset of elements, the ommitted ones don't yet work ...
 
         for el_index in [ 1, 2, 3, 4, 5, 12, 13, 14, 16, 17]:
 
-            self.current_element = self.elements[el_index]
+            # set global notification of the current working element
+            self.current_element = self.config["elements"][el_index]
+
+            # import items from element
             self.create_one_set_of_elements(self.current_element)
 
     def create_one_set_of_elements(self, element):
 
-        jsonDir = os.path.join(os.path.abspath(baseDir + "/json"), element)
-        # objDir = os.path.join(os.path.abspath(baseDir + "/obj"), element)
-        # texDir = os.path.join(os.path.abspath(baseDir + "/textures"), element)
+        jsonDir = os.path.join(os.path.abspath(self.baseDir + "/json"), element)
 
         # read the json file that lists the objects to create:
         base_element_dict_from_json = self.readJsonFile(os.path.join(jsonDir, element + ".json"))
@@ -66,8 +74,9 @@ class FillScene:
         # import the objects:
         self.import_obj_file(base_element_dict_from_json["geomObjFile"], "", element)
 
-        # place the base object where it is supposed to be locate:
+        # place the base object where it is supposed to be located:
         if cmds.objExists(str(base_element_dict_from_json['name'] + "_default_grp")):
+            # transform matrix location is located in the json file
             cmds.xform(str(base_element_dict_from_json['name'] + "_default_grp"), matrix=base_element_dict_from_json["transformMatrix"])
         else:
             pass
@@ -75,7 +84,7 @@ class FillScene:
         # read the materials json file
         materialDict = self.readJsonFile(os.path.join(jsonDir, "materials.json"))
 
-        # make the textures
+        # make the textures from materialDict
         self.make_textures(materialDict)
 
         # fix hierarchy:
@@ -176,8 +185,9 @@ class FillScene:
 
     def make_a_texture(self, base_object, ptex_object):
 
-        texDir = os.path.join(os.path.abspath(baseDir + "/textures"), base_object)
+        texDir = os.path.join(os.path.abspath(self.baseDir + "/textures"), base_object)
 
+        # ideally, the lambert view shader would be similar in color to the actual pxr_surface color for modeling
         lambert_shader = cmds.shadingNode('lambert', asShader=True, name=base_object + "_" + ptex_object + '_lambert')
 
         actual_shader = cmds.shadingNode('PxrSurface', asShader=True, name=base_object + "_" + ptex_object + '_pxr')
@@ -206,6 +216,7 @@ class FillScene:
                     if str(tex[:2]) != 'xg' and 'archive' not in str(tex):
                         print(self.current_element + " . " + tex)
                         self.make_a_texture(self.current_element, tex)
+
 
     def assign_textures(self):
 
