@@ -33,3 +33,15 @@ You are free to use them however you like.
 * archive objects are not imported. items created with xgen or banzai were not imported because doing so would have taken hours ... 
 * items will still have jagged edges when rendered. again this is because of the lack of wanting to burn down my computer ...
 * defined cameras are not set.
+
+## Examples:
+
+![alt text](https://raw.githubusercontent.com/rob-robinson/maya-python-motunui-island-scene-parser/master/examples/2__perspShape_beauty.0001.jpg)
+
+![alt text](https://raw.githubusercontent.com/rob-robinson/maya-python-motunui-island-scene-parser/master/examples/2__perspShape_beauty.0002.jpg)
+
+![alt text](https://raw.githubusercontent.com/rob-robinson/maya-python-motunui-island-scene-parser/master/examples/2__perspShape_beauty.0003.jpg)
+
+![alt text](https://raw.githubusercontent.com/rob-robinson/maya-python-motunui-island-scene-parser/master/examples/2__perspShape_beauty.0004.jpg)
+
+![alt text](https://raw.githubusercontent.com/rob-robinson/maya-python-motunui-island-scene-parser/master/examples/2__perspShape_beauty.0005.jpg)
